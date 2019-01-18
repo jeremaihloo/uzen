@@ -22,6 +22,7 @@ var encodingCandidates = []string{"utf-8", "gbk", "big5", "shift-jis"}
 var logger = log.New(os.Stderr, "", 0)
 
 var encoding string
+var targetDir string
 
 func init() {
 	flag.Usage = func() {
@@ -31,6 +32,7 @@ func init() {
 		os.Exit(0)
 	}
 	flag.StringVar(&encoding, "c", "", "Forcing codec instead of auto detecting")
+	flag.StringVar(&targetDir, "d", "", "Target directory to save unziped files")
 }
 
 func main() {
@@ -78,9 +80,11 @@ func main() {
 						goto DETERMINE_ENC
 					}
 				}
+				if targetDir != "" {
+					utf8name = filepath.Join(targetDir, utf8name)
+				}
 				if strings.HasSuffix(file.Name, "/") {
 					os.MkdirAll(utf8name, 0755)
-
 				} else {
 					filedir := filepath.Dir(utf8name)
 					if _, err := os.Stat(filedir); err != nil {
