@@ -14,9 +14,10 @@ import (
 	iconv "github.com/qiniu/iconv"
 )
 
+// SortFile sortfiles
 type SortFile []*zip.File
 
-var encoding_candidate = []string{"utf-8", "gbk", "big5", "shift-jis"}
+var encodingCandidates = []string{"utf-8", "gbk", "big5", "shift-jis"}
 
 var logger = log.New(os.Stderr, "", 0)
 
@@ -50,29 +51,29 @@ func main() {
 			sort.Sort(SortFile(rzip.File))
 
 			var utf8name string
-			var enc_err error
+			var encErr error
 
 			for _, file := range rzip.File {
 			DETERMINE_ENC:
 				if encoding == "" {
-					for _, enc := range encoding_candidate {
+					for _, enc := range encodingCandidates {
 						fmt.Printf("%s %s", file.Name, enc)
-						cd, enc_err := iconv.Open("utf-8", enc)
+						cd, encErr := iconv.Open("utf-8", enc)
 						utf8name = cd.ConvString(file.Name)
-						if enc_err == nil {
+						if encErr == nil {
 							encoding = enc
 							break
 						}
 					}
 
-					if enc_err != nil {
-						logger.Print(enc_err)
+					if encErr != nil {
+						logger.Print(encErr)
 						return
 					}
 				} else {
-					cd, enc_err := iconv.Open("utf-8", encoding)
+					cd, encErr := iconv.Open("utf-8", encoding)
 					utf8name = cd.ConvString(file.Name)
-					if enc_err != nil {
+					if encErr != nil {
 						encoding = ""
 						goto DETERMINE_ENC
 					}
@@ -117,7 +118,7 @@ func extractZip(dst string, zf *zip.File) error {
 		return err
 	}
 	if uint64(copiedSize) != zf.UncompressedSize64 {
-		return fmt.Errorf("Failed to extract file %s: size mismatched.", dst)
+		return fmt.Errorf("Failed to extract file %s: size mismatched", dst)
 	}
 	return nil
 }
