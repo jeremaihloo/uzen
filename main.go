@@ -59,7 +59,6 @@ func main() {
 			DETERMINE_ENC:
 				if encoding == "" {
 					for _, enc := range encodingCandidates {
-						fmt.Printf("%s %s", file.Name, enc)
 						cd, encErr := iconv.Open("utf-8", enc)
 						utf8name = cd.ConvString(file.Name)
 						if encErr == nil || utf8name == "" {
@@ -80,6 +79,7 @@ func main() {
 						goto DETERMINE_ENC
 					}
 				}
+				fmt.Printf("filename : %s", utf8name)
 				if targetDir != "" {
 					utf8name = filepath.Join(targetDir, utf8name)
 				}
