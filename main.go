@@ -62,7 +62,7 @@ func main() {
 						fmt.Printf("%s %s", file.Name, enc)
 						cd, encErr := iconv.Open("utf-8", enc)
 						utf8name = cd.ConvString(file.Name)
-						if encErr == nil {
+						if encErr == nil || utf8name == "" {
 							encoding = enc
 							break
 						}
@@ -75,7 +75,7 @@ func main() {
 				} else {
 					cd, encErr := iconv.Open("utf-8", encoding)
 					utf8name = cd.ConvString(file.Name)
-					if encErr != nil {
+					if encErr != nil || utf8name == "" {
 						encoding = ""
 						goto DETERMINE_ENC
 					}
